@@ -282,17 +282,7 @@ public class MultiplayerScript : MonoBehaviour {
 					
 					Network.Connect(connectToIP, connectionPort);
 
-                    bool setPlayer = false;
-                    setPlayer = setPlayerActive("Player");
-                    if (!setPlayer)
-                    {
-                        setPlayer = setPlayerActive("Player2");
-                        if (!setPlayer)
-                        {
-                            setPlayer = setPlayerActive("Player3");
-                        }
-                    }
-                                        
+                                 
                     PlayerPrefs.SetString("playerName", playerName);
 
 				}
@@ -310,16 +300,7 @@ public class MultiplayerScript : MonoBehaviour {
 		
 	}
 
-    bool setPlayerActive(string playerName)
-    {
-        GameObject playerObject = GameObject.Find("Player");
-        if (!playerObject.GetComponent<MovePlayer>().getCurrent())
-        {
-            playerObject.GetComponent<MovePlayer>().setActive(true);
-            return true;
-        }
-        return false;
-    }
+   
 	
 	void ServerDisconnectWindow(int windowID)
 	{
@@ -337,6 +318,8 @@ public class MultiplayerScript : MonoBehaviour {
 		{
 			GUILayout.Label("Ping: " + Network.GetAveragePing(Network.connections[0]));	
 		}
+
+       
 		
 		
 		//Shutdown the server if the user clicks on the Shutdown server button.
@@ -411,9 +394,14 @@ public class MultiplayerScript : MonoBehaviour {
 	void OnPlayerConnected(NetworkPlayer networkPlayer)
 	{
         print("player connected.");
-		networkView.RPC("TellPlayerServerName", networkPlayer, serverName);
-        networkView.RPC("PrintGamePosition", networkPlayer, serverName);	
+
+	    networkView.RPC("TellPlayerServerName", networkPlayer, serverName);
+        float x = GameObject.Find("Player").GetComponentInChildren<MovePlayer>().xCoord;
+        float y = GameObject.Find("Player").GetComponentInChildren<MovePlayer>().yCoord;
+        networkView.RPC("TellPlayerPlayerPosition", networkPlayer, x, y);
+        //networkView.RPC("PrintGamePosition", networkPlayer, serverName);	
         
+
 		
 		//networkView.RPC("TellEveryoneWinningCriteria", networkPlayer, winningScore);
 	}
@@ -524,6 +512,12 @@ public class MultiplayerScript : MonoBehaviour {
         }
 			
 	}
+
+    void spawnPlayer()
+    {
+        
+        //Network.Instantiate(play);
+    }
 	
 	
 	//Used to tell the MultiplayerScript in connected players the serverName. Otherwise
@@ -541,9 +535,16 @@ public class MultiplayerScript : MonoBehaviour {
     {       
         print("Should be printing game position.");
         print("Player name: " + player.name);
-
     }
 
+    [RPC]
+    void TellPlayerPlayerPosition(float x, float y)
+    {
+        GameObject.Find("Player").GetComponentInChildren<MovePlayer>().xCoord = x;
+        GameObject.Find("Player").GetComponentInChildren<MovePlayer>().yCoord = y;
+        GameObject clone;
+        print("Player 2 should have the position: x: " + x + " y: " + y);
+    }
 
     
 	

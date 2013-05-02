@@ -25,7 +25,8 @@ public class MovePlayer : MonoBehaviour {
 		{
 			// Move player forward
 			float playerMoveAmount = moveSpeed * Input.GetAxis("Vertical");
-			rigidbody.AddRelativeForce(playerMoveAmount,0, 0);
+            
+			this.rigidbody.AddRelativeForce(playerMoveAmount,0, 0);
 			
 			// Turn player left or right
 			float playerTurnAmount = Input.GetAxis("Horizontal");
@@ -34,11 +35,17 @@ public class MovePlayer : MonoBehaviour {
 			xCoord = rigidbody.position.x;
 			yCoord = rigidbody.position.y;
 
+            // Send the information over the network
+            if (playerMoveAmount > 0 || playerTurnAmount > 0)
+            {
+                print("x: " + xCoord + " y: " + yCoord);
+            }
+
             
-            string serverName = this.GetComponent<MultiplayerScript>().serverName;
+            string serverName = GameObject.Find("Plane").GetComponent<MultiplayerScript>().serverName;
             NetworkView networkView = this.networkView;
 
-            if (this.GetComponent<MultiplayerScript>().isNetworked)
+            if (GameObject.Find("Plane").GetComponent<MultiplayerScript>().isNetworked)
             {
                 // this.GetComponent<MultiplayerScript>().networkView.RPC("PrintGamePosition", RPCMode.AllBuffered, serverName);
             }
@@ -55,8 +62,8 @@ public class MovePlayer : MonoBehaviour {
                 {
 					print ("p1");
 					
-					go.GetComponent<MovePlayer>().setActive(false);
-					go2.GetComponent<MovePlayer>().setActive(true);
+		//			go.GetComponent<MovePlayer>().setActive(false);
+		//			go2.GetComponent<MovePlayer>().setActive(true);
 					
 					changedCamera = true;
 				}
@@ -65,8 +72,8 @@ public class MovePlayer : MonoBehaviour {
                 if (this.tag == go2.tag && changedCamera == false )
 				{	
 					print ("p2");
-					go2.GetComponent<MovePlayer>().setActive(false);
-					go.GetComponent<MovePlayer>().setActive(true);
+			//		go2.GetComponent<MovePlayer>().setActive(false);
+			//		go.GetComponent<MovePlayer>().setActive(true);
 					
 					changedCamera = true;
 				}
@@ -108,7 +115,8 @@ public class MovePlayer : MonoBehaviour {
 	void OnMouseDown(){
 		print("Player clicked, his tag: " + this);
 	}
-					
+		
+	/*		
 	public void setActive(bool activeValue)
 	{
 		currentPlayer = activeValue;
@@ -119,6 +127,7 @@ public class MovePlayer : MonoBehaviour {
 		}
 		
 	}
+     * */
 
     public bool getCurrent()
     {
